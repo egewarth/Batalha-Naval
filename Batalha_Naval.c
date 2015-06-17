@@ -18,8 +18,18 @@ void imprime_coordenadas_x(intizinho tamanho){
 	strcat(coordenadas, "  ");
 	printf("%s", coordenadas);
 }
+
 //---------------------------------------------------------------------------------------------------------------------------------------------------
-void imprime_linha_mapa(intizinho tipo_linha){
+void imprime_linha_mapa(intizinho linha, char *linha_mapa, intizinho tamanho){
+    intizinho j=0;
+    printf("%d%c",linha, 186);
+	for (j=0;j<(tamanho);j++){
+		printf("%c%c",linha_mapa[j],186);
+	}
+	printf("%d", linha);
+}
+//---------------------------------------------------------------------------------------------------------------------------------------------------
+void imprime_estrutura_linha_mapa(intizinho tipo_linha, intizinho tamanho){
 	char inicio = '\0', meio = '\0', fim = '\0';
 	register intizinho j=0;
 	switch(tipo_linha){
@@ -45,7 +55,7 @@ void imprime_linha_mapa(intizinho tipo_linha){
 	}
 	
 	printf(" %c", inicio);
-	for (j=0;j<(MAX-1);j++){
+	for (j=0;j<(tamanho-1);j++){
 		printf("%c%c",205, meio);
 	}
 	printf("%c%c",205, fim);
@@ -60,27 +70,59 @@ void imprimir_mapa (char mapa[][MAX]){
 	system("cls || clear");
     imprime_coordenadas_x(MAX);
 	printf ("\n");
-	imprime_linha_mapa(PRIMEIRA_LINHA);
+	imprime_estrutura_linha_mapa(PRIMEIRA_LINHA, MAX);
 	printf("\n");
 		
 	for(i=0;i<(MAX-1);i++){
-		printf("%d%c",i, 186);
-		for (j=0;j<(MAX);j++){
-			printf("%c%c",mapa[i][j],186);
-		}
-		printf("%d\n", i);
-		imprime_linha_mapa(LINHA_MEIO);
+		imprime_linha_mapa(i,mapa[i],MAX);
+		printf("\n");
+		imprime_estrutura_linha_mapa(LINHA_MEIO, MAX);
 		printf("\n");
 	}
-	printf("%d%c", i, 186);
-	for (j=0;j<(MAX);j++){
-		printf("%c%c",mapa[i][j],186);
-	}
-	printf("%d", i);
+	imprime_linha_mapa(i,mapa[i],MAX);
 	
 	printf("\n");
-	imprime_linha_mapa(ULTIMA_LINHA);
+	imprime_estrutura_linha_mapa(ULTIMA_LINHA, MAX);
 	printf("\n");
+	imprime_coordenadas_x(MAX);
+    printf("\n");
+}
+//---------------------------------------------------------------------------------------------------------------------------------------------------
+void imprimir_mapa_partida(char mapa1[][MAX], char mapa2[][MAX]){
+    /*imprime o mapa na tela, pode ser chamada tanto pra imprimir 
+    o mapa do jogador quanto o mapa do inimigo*/
+	register intizinho i=0,j=0;
+	unsigned char letra=CHAR_UPPER;
+	system("cls || clear");
+    imprime_coordenadas_x(MAX);
+    printf ("\t\t");
+	imprime_coordenadas_x(MAX);
+	printf ("\n");
+	imprime_estrutura_linha_mapa(PRIMEIRA_LINHA, MAX);
+	printf ("\t\t");
+	imprime_estrutura_linha_mapa(PRIMEIRA_LINHA, MAX);
+	printf("\n");
+		
+	for(i=0;i<(MAX-1);i++){
+		imprime_linha_mapa(i,mapa1[i],MAX);
+		printf ("\t\t");
+        imprime_linha_mapa(i,mapa2[i],MAX);
+		printf("\n");
+		imprime_estrutura_linha_mapa(LINHA_MEIO, MAX);
+		printf ("\t\t");
+        imprime_estrutura_linha_mapa(LINHA_MEIO, MAX);
+		printf("\n");
+	}
+	imprime_linha_mapa(i,mapa1[i],MAX);
+	printf ("\t\t");
+	imprime_linha_mapa(i,mapa2[i],MAX);
+    printf("\n");
+	imprime_estrutura_linha_mapa(ULTIMA_LINHA, MAX);
+	printf ("\t\t");
+	imprime_estrutura_linha_mapa(ULTIMA_LINHA, MAX);
+	printf("\n");
+	imprime_coordenadas_x(MAX);
+    printf ("\t\t");
 	imprime_coordenadas_x(MAX);
     printf("\n");
 }
@@ -341,22 +383,25 @@ void posicionar_embarcacoes(MapaJogo *mapa){
 }
 //---------------------------------------------------------------------------------------------------------------------------------------------------
 void novo_jogo(){
-	int i,j;
 	MapaJogo mapa;
 	system("cls");
 	inicia_mapa(&mapa);
 	posicionar_embarcacoes(&mapa);
-	imprimir_mapa(mapa.inimigo);
+	imprimir_mapa_partida(mapa.player,mapa.partida_inimigo);
 	pause();
-	imprimir_mapa(mapa.partida_inimigo);
-	pause();
-	
 }
 //---------------------------------------------------------------------------------------------------------------------------------------------------
 int main(){
 	intizinho opcao=0;
 	batalha_naval_inicio();
-	pause();
+	printf("\nCARREGANDO\r");
+	Sleep(TEMPO_SLEEP);
+	printf("CARREGANDO.\r");
+	Sleep(TEMPO_SLEEP);
+	printf("CARREGANDO..\r");
+	Sleep(TEMPO_SLEEP);
+	printf("CARREGANDO...\r");
+	Sleep(TEMPO_SLEEP);
 	do{
         opcao = menu_principal();
 		switch(opcao){

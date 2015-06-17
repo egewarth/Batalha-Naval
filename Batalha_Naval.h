@@ -1,7 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <windows.h>
 //declaração de tamanhos padrões
+#define TEMPO_SLEEP 750
 #define MAX 10
 #define CHAR_UPPER 65
 #define CHAR_LOWER 97
@@ -66,8 +68,11 @@ typedef struct jogo{
 //---------------------------------------------------------------------------------------------------------------------------------------------------
 //declaração das funções usadas no jogo
 void imprime_coordenadas_x(intizinho tamanho);
-void posicao_navio (char mapa[][MAX]);
-void imprimir_mapa (char mapa[][MAX]);
+void imprime_estrutura_linha_mapa(intizinho tipo_linha, intizinho tamanho);
+void imprime_linha_mapa(intizinho linha, char *linha_mapa, intizinho tamanho);
+void posicao_navio(char mapa[][MAX]);
+void imprimir_mapa(char mapa[][MAX]);
+void imprimir_mapa_partida(char mapa1[][MAX], char mapa2[][MAX]);
 void inicia_mapa(MapaJogo* mapa);
 void jogos_salvos();
 void novo_jogo();
