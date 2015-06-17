@@ -4,6 +4,53 @@
 #include <math.h>
 #include <string.h>
 #include "Batalha_Naval.h"
+
+//---------------------------------------------------------------------------------------------------------------------------------------------------
+void imprime_coordenadas_x(intizinho tamanho){
+    char coordenadas[MAX_SIZE_OF_STRING], parte_coordenada[3], letra = '\0';
+    strcpy(coordenadas," ");
+    strcpy(parte_coordenada, " ");
+    parte_coordenada[2] = '\0';
+    for (letra = CHAR_UPPER;letra < (tamanho+CHAR_UPPER); letra++){
+        parte_coordenada[1] = letra;
+        strcat(coordenadas, parte_coordenada);
+	}
+	strcat(coordenadas, "  ");
+	printf("%s", coordenadas);
+}
+//---------------------------------------------------------------------------------------------------------------------------------------------------
+void imprime_linha_mapa(intizinho tipo_linha){
+	char inicio = '\0', meio = '\0', fim = '\0';
+	register intizinho j=0;
+	switch(tipo_linha){
+		case PRIMEIRA_LINHA:
+			inicio = 201;
+			meio = 203;
+			fim = 187;
+			break;
+		case LINHA_MEIO:
+			inicio = 204;
+			meio = 206;
+			fim = 185;
+			break;
+		case ULTIMA_LINHA:
+			inicio = 200;
+			meio = 202;
+			fim = 188;			
+			break;
+		default:
+			printf("ERRO INESPERADO!");
+            pause();
+            exit(0);		
+	}
+	
+	printf(" %c", inicio);
+	for (j=0;j<(MAX-1);j++){
+		printf("%c%c",205, meio);
+	}
+	printf("%c%c",205, fim);
+	
+}
 //---------------------------------------------------------------------------------------------------------------------------------------------------
 void imprimir_mapa (char mapa[][MAX]){
     /*imprime o mapa na tela, pode ser chamada tanto pra imprimir 
@@ -11,47 +58,30 @@ void imprimir_mapa (char mapa[][MAX]){
 	register intizinho i=0,j=0;
 	unsigned char letra=CHAR_UPPER;
 	system("cls || clear");
-	printf (" ");
-    for (letra=CHAR_UPPER;letra<(MAX+CHAR_UPPER);letra++){
-        printf (" %c", letra);
-	}
+    imprime_coordenadas_x(MAX);
 	printf ("\n");
-	printf(" %c", 201);
-	for (j=0;j<(MAX-1);j++){
-		printf("%c%c",205,203);
-	}
-	printf("%c%c",205,187);
-	
+	imprime_linha_mapa(PRIMEIRA_LINHA);
 	printf("\n");
-	
+		
 	for(i=0;i<(MAX-1);i++){
 		printf("%d%c",i, 186);
 		for (j=0;j<(MAX);j++){
 			printf("%c%c",mapa[i][j],186);
 		}
 		printf("%d\n", i);
-		printf(" %c",204);
-		for (j=0;j<(MAX-1);j++){
-			printf("%c%c", 205, 206);
-		}
-		printf("%c%c", 205,185);
+		imprime_linha_mapa(LINHA_MEIO);
 		printf("\n");
 	}
 	printf("%d%c", i, 186);
 	for (j=0;j<(MAX);j++){
 		printf("%c%c",mapa[i][j],186);
 	}
-	printf("%d\n", i);
-	printf(" %c",200);
-	for (j=0;j<(MAX-1);j++){
-		printf("%c%c", 205, 202);
-	}
-	printf("%c%c", 205,188);
+	printf("%d", i);
+	
 	printf("\n");
-	printf (" ");
-    for (letra=CHAR_UPPER;letra<(MAX+CHAR_UPPER);letra++){
-        printf (" %c", letra);
-	}
+	imprime_linha_mapa(ULTIMA_LINHA);
+	printf("\n");
+	imprime_coordenadas_x(MAX);
     printf("\n");
 }
 //---------------------------------------------------------------------------------------------------------------------------------------------------

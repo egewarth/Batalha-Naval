@@ -16,6 +16,13 @@
 #define WIN 1
 #define TRUE 1
 #define FALSE 0
+#define MAX_SIZE_OF_STRING 50
+
+//Definicoes de mapa
+#define PRIMEIRA_LINHA 1
+#define LINHA_MEIO 2
+#define ULTIMA_LINHA 3
+
 
 #define PORTA_AVIAO 5
 #define QUANTIDADE_PORTA_AVIAO 1
@@ -58,6 +65,7 @@ typedef struct jogo{
 //---------------------------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------------------------
 //declaração das funções usadas no jogo
+void imprime_coordenadas_x(intizinho tamanho);
 void posicao_navio (char mapa[][MAX]);
 void imprimir_mapa (char mapa[][MAX]);
 void inicia_mapa(MapaJogo* mapa);
