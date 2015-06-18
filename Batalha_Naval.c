@@ -1,148 +1,75 @@
-//declaração de bibliotecas pré definidas pela linguagem
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
-#include <string.h>
-#include "Batalha_Naval.h"
-
+#include "Batalha_Naval_Imprime.c"
 //---------------------------------------------------------------------------------------------------------------------------------------------------
-void imprime_coordenadas_x(intizinho tamanho){
-    char coordenadas[MAX_SIZE_OF_STRING], parte_coordenada[3], letra = '\0';
-    strcpy(coordenadas,"  ");
-    strcpy(parte_coordenada, " ");
-    parte_coordenada[2] = '\0';
-    for (letra = CHAR_A_UPPER;letra < (tamanho+CHAR_A_UPPER); letra++){
-        parte_coordenada[1] = letra;
-        strcat(coordenadas, parte_coordenada);
-	}
-	strcat(coordenadas, "  ");
-	printf("%s", coordenadas);
-}
-
+//declaração das funções usadas no jogo
+void posicao_navio(char mapa[][MAX]);
+void inicia_mapa(MapaJogo* mapa);
+void jogos_salvos();
+void novo_jogo();
+void posicao_bomba();
+intizinho menu_partida();
+intizinho menu_principal();
+intizinho salvar_jogo(Jogo *jogo);
 //---------------------------------------------------------------------------------------------------------------------------------------------------
-void imprime_linha_mapa(intizinho linha, char *linha_mapa, intizinho tamanho){
-    intizinho j=0;
-    printf(" %d%c",linha, 186);
-	for (j=0;j<(tamanho);j++){
-		printf("%c%c",linha_mapa[j],186);
+void inicia_mapa(MapaJogo *mapa){
+    //função para iniciar o mapa com todos os espaços iguais a '~' (agua)
+	intizinho i=0,j=0;
+	for(i=0;i<MAX;i++){
+		for (j=0;j<MAX;j++){
+			mapa->player[i][j] = '~';
+			mapa->inimigo[i][j] = '~';
+			mapa->partida_inimigo[i][j] = ' '; 
+		}
 	}
-	printf("%d", linha);
 }
 //---------------------------------------------------------------------------------------------------------------------------------------------------
-void imprime_estrutura_linha_mapa(intizinho tipo_linha, intizinho tamanho){
-	char inicio = '\0', meio = '\0', fim = '\0';
-	register intizinho j=0;
-	switch(tipo_linha){
-		case PRIMEIRA_LINHA:
-			inicio = 201;
-			meio = 203;
-			fim = 187;
-			break;
-		case LINHA_MEIO:
-			inicio = 204;
-			meio = 206;
-			fim = 185;
-			break;
-		case ULTIMA_LINHA:
-			inicio = 200;
-			meio = 202;
-			fim = 188;			
-			break;
-		case (PRIMEIRA_LINHA+MENU):
-			inicio = 201;
-			meio = 205;
-			fim = 187;
-			break;
-		case (LINHA_MEIO+MENU):
-			inicio = 204;
-			meio = 205;
-			fim = 185;
-			break;
-		case (ULTIMA_LINHA+MENU):
-			inicio = 200;
-			meio = 205;
-			fim = 188;			
-			break;
-		default:
-			printf("ERRO INESPERADO!");
+Jogo cria_jogo(char* nome, intizinho turno, MapaJogo* mapa){
+    //função para criar o jogo
+	intizinho i=0,j=0;
+	Jogo jogo;
+	strcpy(jogo.nome, nome);
+	jogo.turno = turno;
+	jogo.mapa = *mapa;
+	
+	return jogo;
+}
+//---------------------------------------------------------------------------------------------------------------------------------------------------
+char caracter_embarcacao(const intizinho tipo_embarcacao){
+    char tipo;
+    switch(tipo_embarcacao){
+        case PORTA_AVIAO:
+            tipo='P';
+            break;
+        case ENCOURACADO:
+            tipo='E';
+            break;
+        case CRUZADOR:
+            tipo='C';
+            break;
+        case SUBMARINO:
+            tipo='S';
+            break;
+        default:
+            printf("ERRO INESPERADO!");
             pause();
-            exit(0);		
-	}
-	
-	printf("  %c", inicio);
-	for (j=0;j<(tamanho-1);j++){
-		printf("%c%c",205, meio);
-	}
-	printf("%c%c",205, fim);
-	
+            exit(0);
+    }
+    return tipo;
 }
 //---------------------------------------------------------------------------------------------------------------------------------------------------
-void imprimir_mapa (char mapa[][MAX]){
-    /*imprime o mapa na tela, pode ser chamada tanto pra imprimir 
-    o mapa do jogador quanto o mapa do inimigo*/
-	register intizinho i=0,j=0;
-	unsigned char letra=CHAR_A_UPPER;
-	system("cls || clear");
-	printf ("\n");
-    imprime_coordenadas_x(MAX);
-	printf ("\n");
-	imprime_estrutura_linha_mapa(PRIMEIRA_LINHA, MAX);
-	printf("\n");
-		
-	for(i=0;i<(MAX-1);i++){
-		imprime_linha_mapa(i,mapa[i],MAX);
-		printf("\n");
-		imprime_estrutura_linha_mapa(LINHA_MEIO, MAX);
-		printf("\n");
-	}
-	imprime_linha_mapa(i,mapa[i],MAX);
-	
-	printf("\n");
-	imprime_estrutura_linha_mapa(ULTIMA_LINHA, MAX);
-	printf("\n");
-	imprime_coordenadas_x(MAX);
-    printf("\n");
+intizinho menu_principal(){
+	intizinho opcao=0;
+	imprime_menu_principal();
+	scanf("%hi", &opcao);
+	fflush(stdin);
+	return opcao;
 }
 //---------------------------------------------------------------------------------------------------------------------------------------------------
-void imprimir_mapa_partida(char mapa1[][MAX], char mapa2[][MAX]){
-    /*imprime o mapa na tela, pode ser chamada tanto pra imprimir 
-    o mapa do jogador quanto o mapa do inimigo*/
-	register intizinho i=0,j=0;
-	unsigned char letra=CHAR_A_UPPER;
-	system("cls || clear");
-	printf ("\n\tSeu Mapa\t\t");
-    printf ("       Mapa Inimigo\n\n");
-    imprime_coordenadas_x(MAX);
-    printf ("\t");
-	imprime_coordenadas_x(MAX);
-	printf ("\n");
-	imprime_estrutura_linha_mapa(PRIMEIRA_LINHA, MAX);
-	printf ("\t\t");
-	imprime_estrutura_linha_mapa(PRIMEIRA_LINHA, MAX);
-	printf("\n");
-		
-	for(i=0;i<(MAX-1);i++){
-		imprime_linha_mapa(i,mapa1[i],MAX);
-		printf ("\t");
-        imprime_linha_mapa(i,mapa2[i],MAX);
-		printf("\n");
-		imprime_estrutura_linha_mapa(LINHA_MEIO, MAX);
-        printf ("\t\t");
-        imprime_estrutura_linha_mapa(LINHA_MEIO, MAX);
-		printf("\n");
-	}
-	imprime_linha_mapa(i,mapa1[i],MAX);
-	printf ("\t");
-	imprime_linha_mapa(i,mapa2[i],MAX);
-    printf("\n");
-	imprime_estrutura_linha_mapa(ULTIMA_LINHA, MAX);
-	printf ("\t\t");
-	imprime_estrutura_linha_mapa(ULTIMA_LINHA, MAX);
-	printf("\n");
-	imprime_coordenadas_x(MAX);
-    printf ("\t");
-	imprime_coordenadas_x(MAX);
-    printf("\n");
+intizinho menu_partida(){
+	intizinho opcao=0;
+	imprime_menu_partida();
+	scanf("%hi", &opcao);
+	fflush(stdin);
+	return opcao;
 }
 //---------------------------------------------------------------------------------------------------------------------------------------------------
 void jogos_salvos(){
@@ -412,27 +339,73 @@ void dicas_de_jogo(){
 	Sleep(TEMPO_SLEEP_DICA);
 }
 //---------------------------------------------------------------------------------------------------------------------------------------------------
+intizinho salvar_jogo(Jogo *jogo){
+	FILE* jogos_salvos = fopen("jogos_salvos.DAT", "a+b");
+	if(jogos_salvos != NULL){
+		if((fwrite(jogo, (sizeof(Jogo)), 1, jogos_salvos)) == FALSE){
+			erro("salvar_jogo()", "Nao foi possivel salvar o jogo!");
+			return FALSE;
+		}else{
+			//salvou!
+		}
+	}else{
+		erro("salvar_jogo()", "Nao foi possivel abrir o arquivo!");
+		return FALSE;
+	}
+	fclose(jogos_salvos);
+	return TRUE;
+}
+//---------------------------------------------------------------------------------------------------------------------------------------------------
 void novo_jogo(){
+	intizinho opcao = 0;
+	Jogo jogo;
 	MapaJogo mapa;
 	system("cls");
-	inicia_mapa(&mapa);
-	dicas_de_jogo();
-	posicionar_embarcacoes(&mapa);
-	imprimir_mapa_partida(mapa.player, mapa.partida_inimigo);
-	pause();
+	inicia_mapa(&(jogo.mapa));
+	jogo = cria_jogo("<SEM NOME>", START, &(jogo.mapa));
+	//pause();
+	//dicas_de_jogo();
+	posicionar_embarcacoes(&(jogo.mapa));
+	do{
+        opcao = menu_partida();
+		switch(opcao){
+			case 1:
+				//jogo();
+				imprimir_mapa_partida((jogo.mapa).player, (jogo.mapa).partida_inimigo);
+				pause();
+				break;
+			case 2:
+				if(salvar_jogo(&jogo)==TRUE){
+					//nothing
+				}else{
+					printf("N%co foi poss%cvel salvar jogo.\n", CHAR_ATIO, CHAR_IACENTO);
+					pause();
+				}
+				break;
+			case 3:
+				if(salvar_jogo(&jogo)==TRUE){
+					//nothing
+				}else{
+					printf("N%co foi poss%cvel salvar jogo.\n", CHAR_ATIO, CHAR_IACENTO);
+					pause();
+				}
+				opcao=STOP;
+				break;
+			case 4:
+				opcao=STOP;
+				break;
+			default:
+				printf("Op%c%co inv%clida.", CHAR_CEDILHA, CHAR_ATIO, CHAR_AAGUDO);
+				pause();
+				continue;
+		}
+	}while(opcao!=STOP);
+	
 }
 //---------------------------------------------------------------------------------------------------------------------------------------------------
 int main(){
 	intizinho opcao=0;
-	batalha_naval_inicio();
-	printf("\n\tCARREGANDO\r");
-	Sleep(TEMPO_SLEEP);
-	printf("\tCARREGANDO.\r");
-	Sleep(TEMPO_SLEEP);
-	printf("\tCARREGANDO..\r");
-	Sleep(TEMPO_SLEEP);
-	printf("\tCARREGANDO...\r");
-	Sleep(TEMPO_SLEEP);
+	//batalha_naval_inicio();
 	//pause();
 	do{
         opcao = menu_principal();
