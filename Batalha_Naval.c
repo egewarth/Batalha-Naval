@@ -228,7 +228,7 @@ int coordenada_valida(char mapa[][MAX], Embarcacao embarcacao){
     return TRUE;
 }
 //---------------------------------------------------------------------------------------------------------------------------------------------------
-Embarcacao cria_embarcacao(char mapa[][MAX],const unsigned short int tipo){
+Embarcacao cria_embarcacao(char mapa[][MAX],const intizinho tipo, intizinho quantidade){
    Embarcacao embarcacao;
    int embarcacao_valida=0;
    embarcacao.tipo = tipo;
@@ -241,6 +241,7 @@ Embarcacao cria_embarcacao(char mapa[][MAX],const unsigned short int tipo){
                 do{
                     system("cls || clear");
                     imprimir_mapa(mapa);
+                    printf("%d ", quantidade);
                     imprime_comando_popa(tipo);
                     do{
                         fflush(stdin);
@@ -267,6 +268,7 @@ Embarcacao cria_embarcacao(char mapa[][MAX],const unsigned short int tipo){
                 do{
                     system("cls || clear");
                     imprimir_mapa(mapa);
+                    printf("%d ", quantidade);
                     imprime_comando_proa(tipo);
                     do{
                         fflush(stdin);
@@ -368,29 +370,27 @@ void coloca_embarcacao(char mapa[][MAX], Embarcacao embarcacao){
 void posicionar_embarcacoes(MapaJogo *mapa){
     /*função para posicionar os embarcacoes,essa função ira imprimir o mapa
     atualizado a cada vez que o usuario colocar uma coordenada valida*/
-    int coordenada_popa_x=0,coordenada_popa_y=0;
-    int coordenada_proa_x=0,coordenada_proa_y=0;
-    int i=0;
-    int validado;
+    intizinho i=0;
+    intizinho contador=0;
     Embarcacao embarcacao;
     imprimir_mapa(mapa->player);
-    for(i=0; i<QUANTIDADE_PORTA_AVIAO; i++){
-        embarcacao = cria_embarcacao(mapa->player, PORTA_AVIAO);
+    for(i=0; i<QUANTIDADE_PORTA_AVIAO; i++, contador++){
+		embarcacao = cria_embarcacao(mapa->player, PORTA_AVIAO, contador);
         coloca_embarcacao(mapa->player, embarcacao);
         imprimir_mapa(mapa->player);
     }
-    for(i=0; i<QUANTIDADE_ENCOURACADO; i++){
-        embarcacao = cria_embarcacao(mapa->player, ENCOURACADO);
+    for(i=0; i<QUANTIDADE_ENCOURACADO; i++, contador++){
+        embarcacao = cria_embarcacao(mapa->player, ENCOURACADO, contador);
         coloca_embarcacao(mapa->player, embarcacao);
         imprimir_mapa(mapa->player);
     }
-    for(i=0; i<QUANTIDADE_CRUZADOR; i++){
-        embarcacao = cria_embarcacao(mapa->player, CRUZADOR);
+    for(i=0; i<QUANTIDADE_CRUZADOR; i++, contador++){
+        embarcacao = cria_embarcacao(mapa->player, CRUZADOR, contador);
         coloca_embarcacao(mapa->player, embarcacao);
         imprimir_mapa(mapa->player);
     }
-    for(i=0; i<QUANTIDADE_SUBMARINO; i++){
-        embarcacao = cria_embarcacao(mapa->player, SUBMARINO);
+    for(i=0; i<QUANTIDADE_SUBMARINO; i++, contador++){
+        embarcacao = cria_embarcacao(mapa->player, SUBMARINO, contador);
         coloca_embarcacao(mapa->player, embarcacao);
         imprimir_mapa(mapa->player);
     }

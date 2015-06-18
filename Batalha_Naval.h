@@ -33,11 +33,11 @@
 #define PORTA_AVIAO 5
 #define QUANTIDADE_PORTA_AVIAO 1
 #define ENCOURACADO 3
-#define QUANTIDADE_ENCOURACADO 2
+#define QUANTIDADE_ENCOURACADO 3
 #define CRUZADOR 2
 #define QUANTIDADE_CRUZADOR 2
 #define SUBMARINO 1
-#define QUANTIDADE_SUBMARINO 10
+#define QUANTIDADE_SUBMARINO 7
 #define QUANTIDADE_JOGOS_SALVOS 5
 #define TAMANHO_NOME_JOGO 10
 //---------------------------------------------------------------------------------------------------------------------------------------------------
