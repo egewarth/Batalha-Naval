@@ -4,17 +4,20 @@
 #include <windows.h>
 //declaração de tamanhos padrões
 #define TEMPO_SLEEP 750
+#define TEMPO_SLEEP_DICA 1000
 #define MAX 10
-#define CHAR_UPPER 65
-#define CHAR_LOWER 97
-#define STOP 3
+//declaração  
+#define CHAR_A_UPPER 65
+#define CHAR_A_LOWER 97
 #define CHAR_ESPACO 10
 #define CHAR_ENTER 32
 #define CHAR_CEDILHA 135
 #define CHAR_ATIO 198
 #define CHAR_TIO 126
 #define CHAR_AAGUDO 160
-#define STOP 3
+#define CHAR_ESC 27
+
+#define STOP 4
 #define WIN 1
 #define TRUE 1
 #define FALSE 0
@@ -24,6 +27,7 @@
 #define PRIMEIRA_LINHA 1
 #define LINHA_MEIO 2
 #define ULTIMA_LINHA 3
+#define MENU 4
 
 
 #define PORTA_AVIAO 5
@@ -48,6 +52,10 @@ typedef struct mapas{
 	char partida_inimigo[MAX][MAX];
 }MapaJogo;
 
+typedef struct mapa{
+    char partida_inimigo[MAX][MAX];
+}Mapa;
+
 typedef struct coordenada{
     unsigned char x;
     intizinho y;
@@ -55,7 +63,7 @@ typedef struct coordenada{
 
 typedef struct embarcacao{
     intizinho tipo;
-    Coordenada polpa;
+    Coordenada popa;
     Coordenada proa;
 }Embarcacao;
 
@@ -83,6 +91,13 @@ intizinho menu_principal();
 void pause(){
     fflush(stdin);
     getchar();
+}
+void erro(char funcao[MAX_SIZE_OF_STRING], char tipo_erro[MAX_SIZE_OF_STRING]){
+	printf("ERRO INESPERADO!");
+	printf("Fun%c%co: %s\n", funcao);
+	printf("Tipo de erro: %s\n", tipo_erro);
+	pause();
+	exit(0);
 }
 //---------------------------------------------------------------------------------------------------------------------------------------------------
 void inicia_mapa(MapaJogo *mapa){
@@ -123,41 +138,46 @@ void batalha_naval_inicio(){
 	imprimir_mapa(inicio);
 }
 //---------------------------------------------------------------------------------------------------------------------------------------------------
-void imprime_comando_polpa(const intizinho tipo){
-    /*função para imprimir mensagem do que o jogador estara inserindo no mapa(polpa e submarino)*/
-    switch(tipo){
+void imprime_comando_popa(const intizinho tipo){
+    /*função para imprimir mensagem do que o jogador estara inserindo no mapa(popa e submarino)*/
+    printf("\n");
+	switch(tipo){
         case PORTA_AVIAO:
-            printf ("Indique as Coordenadas da polpa do seu Porta-Avi%co:\n", CHAR_ATIO);
+            printf ("Indique as Coordenadas(Ex:A2) da popa do seu Porta-Avi%co - %d casas:\n", CHAR_ATIO, tipo);
             break;
         case ENCOURACADO:
-            printf ("Indique as Coordenadas da polpa do seu Encoura%cado:\n", CHAR_CEDILHA);
+            printf ("Indique as Coordenadas(Ex:D9) da popa do seu Encoura%cado - %d casas:\n", CHAR_CEDILHA, tipo);
             break;
         case CRUZADOR:
-            printf ("Indique as Coordenadas da polpa do seu Cruzador:\n");
+            printf ("Indique as Coordenadas(Ex:J7) da popa do seu Cruzador - %d casas:\n", tipo);
             break;
         case SUBMARINO:
-            printf ("Indique as Coordenadas do seu Submarino:\n");
+            printf ("Indique as Coordenadas(Ex:H3) do seu Submarino - %d casa:\n", tipo);
             break;
         default:
-            //nothing
+			erro("imprime_comando_popa()", "Tipo da Embarcacao nao existe!");
             break;
    }
 }
 //---------------------------------------------------------------------------------------------------------------------------------------------------
-void imprime_comando_proa(const unsigned short int tipo){
+void imprime_comando_proa(const intizinho tipo){
     /*função para imprimir mensagem do que o jogador estara inserindo no mapa(proa)*/
-    switch(tipo){
+    printf("\n");
+	switch(tipo){
         case PORTA_AVIAO:
-            printf ("Indique as Coordenadas da proa do seu Porta-Avi%co:\n", CHAR_ATIO);
+            printf ("Indique as Coordenadas(Ex:A6) da proa do seu Porta-Avi%co - %d casas:\n", CHAR_ATIO, tipo);
             break;
         case ENCOURACADO:
-            printf ("Indique as Coordenadas da proa do seu Encoura%cado:\n", CHAR_CEDILHA);
+            printf ("Indique as Coordenadas(Ex:D7) da proa do seu Encoura%cado - %d casas:\n", CHAR_CEDILHA, tipo);
             break;
         case CRUZADOR:
-            printf ("Indique as Coordenadas da proa do seu Cruzador:\n");
+            printf ("Indique as Coordenadas(Ex:J8) da proa do seu Cruzador - %d casas:\n", tipo);
+            break;
+        case SUBMARINO:
+            erro("imprime_comando_proa()", "Opcao invalida para Submarinos!");
             break;
         default:
-            //nothing
+            erro("imprime_comando_proa()", "Tipo da Embarcacao nao existe!");
             break;
    }
 }
@@ -185,12 +205,48 @@ char caracter_embarcacao(const intizinho tipo_embarcacao){
     return tipo;
 }
 //---------------------------------------------------------------------------------------------------------------------------------------------------
+char* completa_string(char *string, intizinho tamanho){
+	intizinho i = 0, espacos = ((tamanho*2) - strlen(string))/2;
+	free(string);
+	string = (char*)calloc((espacos+1),sizeof(char));
+	string[0] = '\0';
+	for(i=0; i < espacos; i++){
+		strcat(string, " ");
+	}
+	return string;
+}
+//---------------------------------------------------------------------------------------------------------------------------------------------------
 void imprime_menu_principal(){
 	system("clear || cls");
-	printf("\tBatalha Naval\n\n");
-	printf("[1] Novo Jogo\n");
-	printf("[2] Carregar Jogo\n");
-	printf("[3] Sair\n\n");
+	intizinho tamanho = MAX;
+	char *espacos_vazios=NULL;
+	putchar('\n');
+	imprime_estrutura_linha_mapa(PRIMEIRA_LINHA+MENU, tamanho);
+	putchar('\n');
+	espacos_vazios = completa_string("Batalha Naval", tamanho);
+	printf("  %c%sBatalha Naval%s%c\n", 186, espacos_vazios, espacos_vazios, 186);
+	imprime_estrutura_linha_mapa(LINHA_MEIO+MENU, tamanho);
+	putchar('\n');
+	free(espacos_vazios);
+	espacos_vazios = completa_string("[1] Novo Jogo", tamanho);
+	printf("  %c[1] Novo Jogo%s%s%c\n", 186, espacos_vazios, espacos_vazios, 186);
+	imprime_estrutura_linha_mapa(LINHA_MEIO+MENU, tamanho);
+	putchar('\n');
+	free(espacos_vazios);
+	espacos_vazios = completa_string("[2] Jogos Salvos", tamanho);
+	printf("  %c[2] Jogos Salvos\b%s%s%c\n", 186, espacos_vazios, espacos_vazios, 186);
+	imprime_estrutura_linha_mapa(LINHA_MEIO+MENU, tamanho);
+	putchar('\n');
+	free(espacos_vazios);
+	espacos_vazios = completa_string("[3] Ranking", tamanho);
+	printf("  %c[3] Ranking%s%s%c\n", 186, espacos_vazios, espacos_vazios, 186);
+	imprime_estrutura_linha_mapa(LINHA_MEIO+MENU, tamanho);
+	putchar('\n');
+	free(espacos_vazios);
+	espacos_vazios = completa_string("[%d] Sair", tamanho);
+	printf("  %c[%d] Sair%s%s %c\n", 186, STOP, espacos_vazios, espacos_vazios, 186);
+	imprime_estrutura_linha_mapa(ULTIMA_LINHA+MENU, tamanho);
+	putchar('\n');
 	return;
 }
 //---------------------------------------------------------------------------------------------------------------------------------------------------

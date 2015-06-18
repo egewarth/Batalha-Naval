@@ -8,10 +8,10 @@
 //---------------------------------------------------------------------------------------------------------------------------------------------------
 void imprime_coordenadas_x(intizinho tamanho){
     char coordenadas[MAX_SIZE_OF_STRING], parte_coordenada[3], letra = '\0';
-    strcpy(coordenadas," ");
+    strcpy(coordenadas,"  ");
     strcpy(parte_coordenada, " ");
     parte_coordenada[2] = '\0';
-    for (letra = CHAR_UPPER;letra < (tamanho+CHAR_UPPER); letra++){
+    for (letra = CHAR_A_UPPER;letra < (tamanho+CHAR_A_UPPER); letra++){
         parte_coordenada[1] = letra;
         strcat(coordenadas, parte_coordenada);
 	}
@@ -22,7 +22,7 @@ void imprime_coordenadas_x(intizinho tamanho){
 //---------------------------------------------------------------------------------------------------------------------------------------------------
 void imprime_linha_mapa(intizinho linha, char *linha_mapa, intizinho tamanho){
     intizinho j=0;
-    printf("%d%c",linha, 186);
+    printf(" %d%c",linha, 186);
 	for (j=0;j<(tamanho);j++){
 		printf("%c%c",linha_mapa[j],186);
 	}
@@ -48,13 +48,28 @@ void imprime_estrutura_linha_mapa(intizinho tipo_linha, intizinho tamanho){
 			meio = 202;
 			fim = 188;			
 			break;
+		case (PRIMEIRA_LINHA+MENU):
+			inicio = 201;
+			meio = 205;
+			fim = 187;
+			break;
+		case (LINHA_MEIO+MENU):
+			inicio = 204;
+			meio = 205;
+			fim = 185;
+			break;
+		case (ULTIMA_LINHA+MENU):
+			inicio = 200;
+			meio = 205;
+			fim = 188;			
+			break;
 		default:
 			printf("ERRO INESPERADO!");
             pause();
             exit(0);		
 	}
 	
-	printf(" %c", inicio);
+	printf("  %c", inicio);
 	for (j=0;j<(tamanho-1);j++){
 		printf("%c%c",205, meio);
 	}
@@ -66,8 +81,9 @@ void imprimir_mapa (char mapa[][MAX]){
     /*imprime o mapa na tela, pode ser chamada tanto pra imprimir 
     o mapa do jogador quanto o mapa do inimigo*/
 	register intizinho i=0,j=0;
-	unsigned char letra=CHAR_UPPER;
+	unsigned char letra=CHAR_A_UPPER;
 	system("cls || clear");
+	printf ("\n");
     imprime_coordenadas_x(MAX);
 	printf ("\n");
 	imprime_estrutura_linha_mapa(PRIMEIRA_LINHA, MAX);
@@ -92,10 +108,12 @@ void imprimir_mapa_partida(char mapa1[][MAX], char mapa2[][MAX]){
     /*imprime o mapa na tela, pode ser chamada tanto pra imprimir 
     o mapa do jogador quanto o mapa do inimigo*/
 	register intizinho i=0,j=0;
-	unsigned char letra=CHAR_UPPER;
+	unsigned char letra=CHAR_A_UPPER;
 	system("cls || clear");
+	printf ("\n\tSeu Mapa\t\t");
+    printf ("       Mapa Inimigo\n\n");
     imprime_coordenadas_x(MAX);
-    printf ("\t\t");
+    printf ("\t");
 	imprime_coordenadas_x(MAX);
 	printf ("\n");
 	imprime_estrutura_linha_mapa(PRIMEIRA_LINHA, MAX);
@@ -105,16 +123,16 @@ void imprimir_mapa_partida(char mapa1[][MAX], char mapa2[][MAX]){
 		
 	for(i=0;i<(MAX-1);i++){
 		imprime_linha_mapa(i,mapa1[i],MAX);
-		printf ("\t\t");
+		printf ("\t");
         imprime_linha_mapa(i,mapa2[i],MAX);
 		printf("\n");
 		imprime_estrutura_linha_mapa(LINHA_MEIO, MAX);
-		printf ("\t\t");
+        printf ("\t\t");
         imprime_estrutura_linha_mapa(LINHA_MEIO, MAX);
 		printf("\n");
 	}
 	imprime_linha_mapa(i,mapa1[i],MAX);
-	printf ("\t\t");
+	printf ("\t");
 	imprime_linha_mapa(i,mapa2[i],MAX);
     printf("\n");
 	imprime_estrutura_linha_mapa(ULTIMA_LINHA, MAX);
@@ -122,7 +140,7 @@ void imprimir_mapa_partida(char mapa1[][MAX], char mapa2[][MAX]){
 	imprime_estrutura_linha_mapa(ULTIMA_LINHA, MAX);
 	printf("\n");
 	imprime_coordenadas_x(MAX);
-    printf ("\t\t");
+    printf ("\t");
 	imprime_coordenadas_x(MAX);
     printf("\n");
 }
@@ -138,7 +156,7 @@ void jogos_salvos(){
 int posicao_vazia(char mapa[][MAX],const Coordenada coordenada){
     /*função para validar se o lugar onde o jogador está colocando 
     o navio é um lugar 'vazio' (igual a '~') */
-    if (mapa[coordenada.y][(int)(coordenada.x - CHAR_UPPER)] == CHAR_TIO){
+    if (mapa[coordenada.y][(int)(coordenada.x - CHAR_A_UPPER)] == CHAR_TIO){
         return TRUE;    
     }else{
         return FALSE;
@@ -148,7 +166,7 @@ int posicao_vazia(char mapa[][MAX],const Coordenada coordenada){
 int posicao_valida(const Coordenada coordenada){
     /*função para validar se a coordenada que o navio está sendo 
     colocado não é uma coordenada fora do intervalo do mapa(0-9)*/
-    if (!((coordenada.x-CHAR_UPPER)>(MAX-1)||(coordenada.x-CHAR_UPPER)< 0 ||coordenada.y<0||coordenada.y>(MAX-1))){
+    if (!((coordenada.x-CHAR_A_UPPER)>(MAX-1)||(coordenada.x-CHAR_A_UPPER)< 0 ||coordenada.y<0||coordenada.y>(MAX-1))){
         return TRUE;
     }else{
         return FALSE;
@@ -162,8 +180,8 @@ int coordenada_valida(char mapa[][MAX], Embarcacao embarcacao){
     Coordenada coordenada, coordenada_embarcacao;
     intizinho distancia_x=0, distancia_y=0;
     double distancia=0;
-    distancia_x = abs((int)(embarcacao.polpa.x - embarcacao.proa.x));
-    distancia_y = abs((int)(embarcacao.polpa.y - embarcacao.proa.y));
+    distancia_x = abs((int)(embarcacao.popa.x - embarcacao.proa.x));
+    distancia_y = abs((int)(embarcacao.popa.y - embarcacao.proa.y));
     if (distancia_y==0 && distancia_x==0){
         return FALSE;
     }else if(distancia_x==0){
@@ -180,17 +198,17 @@ int coordenada_valida(char mapa[][MAX], Embarcacao embarcacao){
         //Tamanho da embarcação não esta de acordo com a especificação.
         return FALSE;
     }
-    if(embarcacao.polpa.x == embarcacao.proa.x){
+    if(embarcacao.popa.x == embarcacao.proa.x){
         ponteiro_direcao = &j;
-        if(embarcacao.polpa.y < embarcacao.proa.y){
-            coordenada = embarcacao.polpa;
+        if(embarcacao.popa.y < embarcacao.proa.y){
+            coordenada = embarcacao.popa;
         }else{
             coordenada = embarcacao.proa;
         }
-    }else if(embarcacao.polpa.y == embarcacao.proa.y){
+    }else if(embarcacao.popa.y == embarcacao.proa.y){
         ponteiro_direcao = &i;
-        if(embarcacao.polpa.x < embarcacao.proa.x){
-            coordenada = embarcacao.polpa;
+        if(embarcacao.popa.x < embarcacao.proa.x){
+            coordenada = embarcacao.popa;
         }else{
             coordenada = embarcacao.proa;
         }
@@ -223,25 +241,24 @@ Embarcacao cria_embarcacao(char mapa[][MAX],const unsigned short int tipo){
                 do{
                     system("cls || clear");
                     imprimir_mapa(mapa);
-                    imprime_comando_polpa(tipo);
+                    imprime_comando_popa(tipo);
                     do{
                         fflush(stdin);
-                        scanf ("%c", &embarcacao.polpa.x);
-                        if (embarcacao.polpa.x == CHAR_ESPACO){
+                        scanf ("%c", &embarcacao.popa.x);
+        				if (embarcacao.popa.x == CHAR_ESPACO){
                             printf("Insira as Coordenadas.");
                             pause();
-                        }
-                        if (embarcacao.polpa.x == CHAR_ENTER){
+                        }else if (embarcacao.popa.x == CHAR_ENTER){
                             printf("Insira as Coordenadas sem Espa%co.", CHAR_CEDILHA);
                             pause();
                         }
-                    }while(embarcacao.polpa.x == CHAR_ENTER ||embarcacao.polpa.x == CHAR_ESPACO);
-                    scanf ("%d",&embarcacao.polpa.y);
-                    if((unsigned int)embarcacao.polpa.x >= CHAR_LOWER){
-                       embarcacao.polpa.x = (embarcacao.polpa.x - (CHAR_LOWER - CHAR_UPPER));
+                    }while(embarcacao.popa.x == CHAR_ENTER ||embarcacao.popa.x == CHAR_ESPACO);
+                    scanf ("%d",&embarcacao.popa.y);
+                    if((intizinho)embarcacao.popa.x >= CHAR_A_LOWER){
+                       embarcacao.popa.x = (embarcacao.popa.x - (CHAR_A_LOWER - CHAR_A_UPPER));
                     }
-                    valida=posicao_valida(embarcacao.polpa);
-                    vazia=posicao_vazia(mapa, embarcacao.polpa);
+                    valida=posicao_valida(embarcacao.popa);
+                    vazia=posicao_vazia(mapa, embarcacao.popa);
                     if (valida==0 || vazia==0){
                         printf("Coordenadas Inv%clidas.", CHAR_AAGUDO);
                         pause();
@@ -257,15 +274,14 @@ Embarcacao cria_embarcacao(char mapa[][MAX],const unsigned short int tipo){
                         if (embarcacao.proa.x == CHAR_ESPACO){
                             printf("Insira as Coordenadas.");
                             pause();
-                        }
-                        if (embarcacao.proa.x == CHAR_ENTER){
+                        }else if (embarcacao.proa.x == CHAR_ENTER){
                             printf("Insira as Coordenadas sem Espa%co.", CHAR_CEDILHA);
                             pause();
                         }                    
                     }while(embarcacao.proa.x == CHAR_ENTER || embarcacao.proa.x == CHAR_ESPACO);
                     scanf ("%d", &embarcacao.proa.y);
-                    if((unsigned int)embarcacao.proa.x >= CHAR_LOWER){
-                       embarcacao.proa.x = (embarcacao.proa.x - (CHAR_LOWER - CHAR_UPPER));
+                    if((intizinho)embarcacao.proa.x >= CHAR_A_LOWER){
+                       embarcacao.proa.x = (embarcacao.proa.x - (CHAR_A_LOWER - CHAR_A_UPPER));
                     }
                     valida=posicao_valida(embarcacao.proa);
                     vazia=posicao_vazia(mapa, embarcacao.proa);
@@ -279,31 +295,30 @@ Embarcacao cria_embarcacao(char mapa[][MAX],const unsigned short int tipo){
                 do{
                     system("cls || clear");
                     imprimir_mapa(mapa);
-                    imprime_comando_polpa(tipo);
+                    imprime_comando_popa(tipo);
                     do{
                         fflush(stdin);
-                        scanf ("%c", &embarcacao.polpa.x);
-                        if (embarcacao.polpa.x == CHAR_ESPACO){
+                        scanf ("%c", &embarcacao.popa.x);
+                        if (embarcacao.popa.x == CHAR_ESPACO){
                             printf("Insira as Coordenadas.");
                             pause();
-                        }
-                        if (embarcacao.polpa.x == CHAR_ENTER){
+                        }else if (embarcacao.popa.x == CHAR_ENTER){
                             printf("Insira as Coordenadas sem Espa%co.", CHAR_CEDILHA);
                             pause();
                         }
-                    }while(embarcacao.polpa.x == CHAR_ENTER ||embarcacao.polpa.x == CHAR_ESPACO);
-                    scanf ("%d",&embarcacao.polpa.y);
-                    if((unsigned int)embarcacao.polpa.x >= CHAR_LOWER){
-                       embarcacao.polpa.x = (embarcacao.polpa.x - (CHAR_LOWER - CHAR_UPPER));
+                    }while(embarcacao.popa.x == CHAR_ENTER ||embarcacao.popa.x == CHAR_ESPACO);
+                    scanf ("%d",&embarcacao.popa.y);
+                    if((intizinho)embarcacao.popa.x >= CHAR_A_LOWER){
+                       embarcacao.popa.x = (embarcacao.popa.x - (CHAR_A_LOWER - CHAR_A_UPPER));
                     }
-                    valida=posicao_valida(embarcacao.polpa);
-                    vazia=posicao_vazia(mapa, embarcacao.polpa);
+                    valida=posicao_valida(embarcacao.popa);
+                    vazia=posicao_vazia(mapa, embarcacao.popa);
                     if (valida==0 || vazia==0){
                         printf("Coordenadas Inv%clidas.", CHAR_AAGUDO);
                         pause();
                     }
                 }while(!(vazia==1 && valida==1));
-                embarcacao.proa = embarcacao.polpa;
+                embarcacao.proa = embarcacao.popa;
                 break;
             default:
                 //nothing
@@ -325,17 +340,17 @@ void coloca_embarcacao(char mapa[][MAX], Embarcacao embarcacao){
     int i=0, j=0;
     int *ponteiro_direcao;
     Coordenada coordenada, coordenada_embarcacao;
-    if(embarcacao.polpa.x == embarcacao.proa.x){
+    if(embarcacao.popa.x == embarcacao.proa.x){
         ponteiro_direcao = &j;
-        if(embarcacao.polpa.y < embarcacao.proa.y){
-            coordenada = embarcacao.polpa;
+        if(embarcacao.popa.y < embarcacao.proa.y){
+            coordenada = embarcacao.popa;
         }else{
             coordenada = embarcacao.proa;
         }
-    }else if(embarcacao.polpa.y == embarcacao.proa.y){
+    }else if(embarcacao.popa.y == embarcacao.proa.y){
         ponteiro_direcao = &i;
-        if(embarcacao.polpa.x < embarcacao.proa.x){
-            coordenada = embarcacao.polpa;
+        if(embarcacao.popa.x < embarcacao.proa.x){
+            coordenada = embarcacao.popa;
         }else{
             coordenada = embarcacao.proa;
         }
@@ -346,14 +361,14 @@ void coloca_embarcacao(char mapa[][MAX], Embarcacao embarcacao){
     for(i = 0, j = 0; *ponteiro_direcao < embarcacao.tipo; (*ponteiro_direcao)++){
         coordenada.y = coordenada_embarcacao.y + j;
         coordenada.x = coordenada_embarcacao.x + i;
-        mapa[coordenada.y][(int)(coordenada.x - CHAR_UPPER)]= caracter_embarcacao(embarcacao.tipo);
+        mapa[coordenada.y][(int)(coordenada.x - CHAR_A_UPPER)]= caracter_embarcacao(embarcacao.tipo);
     }
 }
 //---------------------------------------------------------------------------------------------------------------------------------------------------
 void posicionar_embarcacoes(MapaJogo *mapa){
     /*função para posicionar os embarcacoes,essa função ira imprimir o mapa
     atualizado a cada vez que o usuario colocar uma coordenada valida*/
-    int coordenada_polpa_x=0,coordenada_polpa_y=0;
+    int coordenada_popa_x=0,coordenada_popa_y=0;
     int coordenada_proa_x=0,coordenada_proa_y=0;
     int i=0;
     int validado;
@@ -382,26 +397,43 @@ void posicionar_embarcacoes(MapaJogo *mapa){
     pause();
 }
 //---------------------------------------------------------------------------------------------------------------------------------------------------
+void dicas_de_jogo(){
+	printf("\n\n\tPara Pausar Aperte 'P'!\n");
+	printf("\tTente Colocar Seus Navios Separadamente\n");
+	printf("\tAo Acertar Um Navio,Tente as Casas do Lado\n");
+	
+	printf("\n\t\tCARREGANDO\r");
+	Sleep(TEMPO_SLEEP_DICA);
+	printf("\t\tCARREGANDO.\r");
+	Sleep(TEMPO_SLEEP_DICA);
+	printf("\t\tCARREGANDO..\r");
+	Sleep(TEMPO_SLEEP_DICA);
+	printf("\t\tCARREGANDO...\r");
+	Sleep(TEMPO_SLEEP_DICA);
+}
+//---------------------------------------------------------------------------------------------------------------------------------------------------
 void novo_jogo(){
 	MapaJogo mapa;
 	system("cls");
 	inicia_mapa(&mapa);
+	dicas_de_jogo();
 	posicionar_embarcacoes(&mapa);
-	imprimir_mapa_partida(mapa.player,mapa.partida_inimigo);
+	imprimir_mapa_partida(mapa.player, mapa.partida_inimigo);
 	pause();
 }
 //---------------------------------------------------------------------------------------------------------------------------------------------------
 int main(){
 	intizinho opcao=0;
 	batalha_naval_inicio();
-	printf("\nCARREGANDO\r");
+	printf("\n\tCARREGANDO\r");
 	Sleep(TEMPO_SLEEP);
-	printf("CARREGANDO.\r");
+	printf("\tCARREGANDO.\r");
 	Sleep(TEMPO_SLEEP);
-	printf("CARREGANDO..\r");
+	printf("\tCARREGANDO..\r");
 	Sleep(TEMPO_SLEEP);
-	printf("CARREGANDO...\r");
+	printf("\tCARREGANDO...\r");
 	Sleep(TEMPO_SLEEP);
+	//pause();
 	do{
         opcao = menu_principal();
 		switch(opcao){
