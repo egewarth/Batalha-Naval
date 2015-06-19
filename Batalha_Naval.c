@@ -6,6 +6,7 @@ void inicia_mapa(MapaJogo* mapa);
 void jogos_salvos();
 void novo_jogo();
 void posicao_bomba();
+void deletar_todos_jogos();
 intizinho menu_partida();
 intizinho menu_principal();
 intizinho salvar_jogo(Jogo *jogo);
@@ -26,6 +27,17 @@ Jogo cria_jogo(char* nome, intizinho turno, MapaJogo* mapa){
     //função para criar o jogo
 	intizinho i=0,j=0;
 	Jogo jogo;
+	if(nome == NULL){
+		nome = (char *) calloc(TAMANHO_NOME_JOGO, sizeof(char));
+		strcpy(nome, "<VAZIO>");
+	}else{
+		//nothing
+	}
+	if(mapa == NULL){
+		mapa = (MapaJogo *) malloc(sizeof(MapaJogo));
+		inicia_mapa(mapa);
+	}
+	
 	strcpy(jogo.nome, nome);
 	jogo.turno = turno;
 	jogo.mapa = *mapa;
@@ -72,11 +84,17 @@ intizinho menu_partida(){
 	return opcao;
 }
 //---------------------------------------------------------------------------------------------------------------------------------------------------
+void deletar_todos_jogos(){
+	FILE* jogos_salvos = fopen("jogos_salvos.DAT", "w+");
+	fclose(jogos_salvos);
+}
+//---------------------------------------------------------------------------------------------------------------------------------------------------
 void jogos_salvos(){
     FILE* jogo_salvo;
     //salvar_jogo();
     //ler_jogos_salvos();
     //mostrar_jogos_salvos();
+    deletar_todos_jogos();
     //deletar_jogos_salvos();
 }
 //---------------------------------------------------------------------------------------------------------------------------------------------------
@@ -339,15 +357,50 @@ void dicas_de_jogo(){
 	Sleep(TEMPO_SLEEP_DICA);
 }
 //---------------------------------------------------------------------------------------------------------------------------------------------------
+Jogo *carrega_jogos(FILE* jogos_salvos, intizinho *quantidade_de_jogos){
+	intizinho quantidade_de_jogos_lida = 0;
+	register intizinho i = 0;
+	fseek(jogos_salvos, sizeof(Jogo), SEEK_END);
+	quantidade_de_jogos_lida = (ftell(jogos_salvos)/(sizeof(Jogo)))-1;
+	rewind(jogos_salvos);
+	Jogo *jogos = (Jogo*)calloc(MAX_JOGOS, sizeof(Jogo));
+	for(i = 0; i < MAX_JOGOS; i++){
+		jogos[i] = cria_jogo(NULL, START, NULL);
+	}
+	if(fread(jogos, (sizeof(Jogo)), MAX_JOGOS, jogos_salvos) != quantidade_de_jogos_lida){
+		erro("carrega_jogos()", "Nao foi possivel carregar jogo!");
+	}else{
+		//ok
+	}
+	*quantidade_de_jogos = quantidade_de_jogos_lida;
+	return jogos;
+}
+//---------------------------------------------------------------------------------------------------------------------------------------------------
 intizinho salvar_jogo(Jogo *jogo){
-	FILE* jogos_salvos = fopen("jogos_salvos.DAT", "a+b");
+	FILE* jogos_salvos = fopen("jogos_salvos.DAT", "r+b");	
+	if(jogos_salvos == NULL){
+		jogos_salvos = fopen("jogos_salvos.DAT", "w+b");	
+	}else{
+		//nothing
+	}
 	if(jogos_salvos != NULL){
-		if((fwrite(jogo, (sizeof(Jogo)), 1, jogos_salvos)) == FALSE){
+		intizinho i = 0;
+		intizinho quantidade_de_jogos = 0;
+		Jogo *jogos = carrega_jogos(jogos_salvos, &quantidade_de_jogos);
+		for(i = 0; i < MAX_JOGOS; i++){
+			printf(" %s\n", jogos[i].nome);
+		}
+		pause();
+		if(quantidade_de_jogos == MAX_JOGOS){
+			printf("Quantidade Maxima de Jogos Atingida");
+			pause();
+			//nothing			
+		}/*else if((fwrite(jogo, (sizeof(Jogo)), 1, jogos_salvos)) == FALSE){
 			erro("salvar_jogo()", "Nao foi possivel salvar o jogo!");
 			return FALSE;
-		}else{
+		}*/else{
 			//salvou!
-		}
+		}	
 	}else{
 		erro("salvar_jogo()", "Nao foi possivel abrir o arquivo!");
 		return FALSE;
@@ -365,7 +418,7 @@ void novo_jogo(){
 	jogo = cria_jogo("<SEM NOME>", START, &(jogo.mapa));
 	//pause();
 	//dicas_de_jogo();
-	posicionar_embarcacoes(&(jogo.mapa));
+	//posicionar_embarcacoes(&(jogo.mapa));
 	do{
         opcao = menu_partida();
 		switch(opcao){

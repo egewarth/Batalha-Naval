@@ -18,6 +18,7 @@
 #define CHAR_TIO 126
 #define CHAR_AAGUDO 160
 #define CHAR_IACENTO 161
+#define CHAR_UAGUDO 163
 #define CHAR_ESC 27
 //---------------------------------------------------------------------------------------------------------------------------------------------------
 #define START 0
@@ -25,6 +26,7 @@
 #define WIN 1
 #define TRUE 1
 #define FALSE 0
+#define MAX_JOGOS 10
 #define MAX_SIZE_OF_STRING 50
 //Definicoes de mapa
 #define PRIMEIRA_LINHA 1
@@ -41,7 +43,7 @@
 #define SUBMARINO 1
 #define QUANTIDADE_SUBMARINO 1
 #define QUANTIDADE_JOGOS_SALVOS 5
-#define TAMANHO_NOME_JOGO 10
+#define TAMANHO_NOME_JOGO 15
 //---------------------------------------------------------------------------------------------------------------------------------------------------
 typedef unsigned short int intizinho; 
 //---------------------------------------------------------------------------------------------------------------------------------------------------
@@ -88,8 +90,8 @@ void pause(){
     getchar();
 }
 void erro(char funcao[MAX_SIZE_OF_STRING], char tipo_erro[MAX_SIZE_OF_STRING]){
-	printf("ERRO INESPERADO!");
-	printf("Fun%c%co: %s\n", funcao);
+	printf("ERRO INESPERADO!\n");
+	printf("Fun%c%co: %s\n", CHAR_CEDILHA, CHAR_ATIO, funcao);
 	printf("Tipo de erro: %s\n", tipo_erro);
 	pause();
 	exit(0);
