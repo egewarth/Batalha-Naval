@@ -1,12 +1,15 @@
+//incluindo arquivo cm as funções de printf e com as structs
 #include "Batalha_Naval_Imprime.c"
 //---------------------------------------------------------------------------------------------------------------------------------------------------
 //declaração das funções usadas no jogo
 void posicao_navio(char mapa[][MAX]);
 void inicia_mapa(MapaJogo* mapa);
-void jogos_salvos();
 void novo_jogo();
 void posicao_bomba();
 void deletar_todos_jogos();
+Jogo *carrega_jogos(FILE* jogos_salvos, intizinho *quantidade_de_jogos);  
+void visualizar_jogos_salvos(Jogo *jogos);
+void jogos_salvos();
 intizinho menu_partida();
 intizinho menu_principal();
 intizinho salvar_jogo(Jogo *jogo);
@@ -24,8 +27,8 @@ void inicia_mapa(MapaJogo *mapa){
 }
 //---------------------------------------------------------------------------------------------------------------------------------------------------
 Jogo cria_jogo(char* nome, intizinho turno, MapaJogo* mapa){
-    //função para criar o jogo
-	intizinho i=0,j=0;
+    //receb o nome, o turno e os mapas e retorna a struct jogo
+    intizinho i=0,j=0;
 	Jogo jogo;
 	if(nome == NULL){
 		nome = (char *) calloc(TAMANHO_NOME_JOGO, sizeof(char));
@@ -36,6 +39,8 @@ Jogo cria_jogo(char* nome, intizinho turno, MapaJogo* mapa){
 	if(mapa == NULL){
 		mapa = (MapaJogo *) malloc(sizeof(MapaJogo));
 		inicia_mapa(mapa);
+	}else{
+		//nothing
 	}
 	
 	strcpy(jogo.nome, nome);
@@ -46,6 +51,7 @@ Jogo cria_jogo(char* nome, intizinho turno, MapaJogo* mapa){
 }
 //---------------------------------------------------------------------------------------------------------------------------------------------------
 char caracter_embarcacao(const intizinho tipo_embarcacao){
+    //recebe o tipo da embarcação como int e retorna o tipo da embarcação como char
     char tipo;
     switch(tipo_embarcacao){
         case PORTA_AVIAO:
@@ -69,6 +75,7 @@ char caracter_embarcacao(const intizinho tipo_embarcacao){
 }
 //---------------------------------------------------------------------------------------------------------------------------------------------------
 intizinho menu_principal(){
+    //imprime o menu e escaneia a opção que vai ser retornda para main
 	intizinho opcao=0;
 	imprime_menu_principal();
 	scanf("%hi", &opcao);
@@ -77,6 +84,7 @@ intizinho menu_principal(){
 }
 //---------------------------------------------------------------------------------------------------------------------------------------------------
 intizinho menu_partida(){
+    //imprime o menu da partida e escaneia a opção que vai ser retornda
 	intizinho opcao=0;
 	imprime_menu_partida();
 	scanf("%hi", &opcao);
@@ -85,15 +93,20 @@ intizinho menu_partida(){
 }
 //---------------------------------------------------------------------------------------------------------------------------------------------------
 void deletar_todos_jogos(){
+    //deleta todos os jogos salvos
 	FILE* jogos_salvos = fopen("jogos_salvos.DAT", "w+");
 	fclose(jogos_salvos);
 }
 //---------------------------------------------------------------------------------------------------------------------------------------------------
 void jogos_salvos(){
-    FILE* jogo_salvo;
+    //CRUD de salvar,delear e alterar os jogos
+    system("clear || cls");
+    intizinho quantidade_de_jogos=0;
+    FILE* jogos_salvos = fopen("jogos_salvos.DAT", "r+b");
+    Jogo *jogos = carrega_jogos(jogos_salvos, &quantidade_de_jogos);
     //salvar_jogo();
     //ler_jogos_salvos();
-    //mostrar_jogos_salvos();
+    visualizar_jogos_salvos(jogos);
     deletar_todos_jogos();
     //deletar_jogos_salvos();
 }
@@ -186,7 +199,7 @@ Embarcacao cria_embarcacao(char mapa[][MAX],const intizinho tipo, intizinho quan
                 do{
                     system("cls || clear");
                     imprimir_mapa(mapa);
-                    printf("%d ", quantidade);
+                    //printf("%d ", quantidade);
                     imprime_comando_popa(tipo);
                     do{
                         fflush(stdin);
@@ -376,6 +389,20 @@ Jogo *carrega_jogos(FILE* jogos_salvos, intizinho *quantidade_de_jogos){
 	return jogos;
 }
 //---------------------------------------------------------------------------------------------------------------------------------------------------
+intizinho valida_salvar(intizinho posicao_salvar){
+    if (posicao_salvar >= 0 && posicao_salvar < MAX_JOGOS){
+        return TRUE;
+    }else{
+        return FALSE;
+    }
+}
+//---------------------------------------------------------------------------------------------------------------------------------------------------
+void visualizar_jogos_salvos(Jogo *jogos){
+    intizinho i=0;
+    for(i = 0; i < MAX_JOGOS; i++){
+			printf(" %d-%s\n", i+1, jogos[i].nome);
+	}
+}
 intizinho salvar_jogo(Jogo *jogo){
 	FILE* jogos_salvos = fopen("jogos_salvos.DAT", "r+b");	
 	if(jogos_salvos == NULL){
@@ -383,23 +410,30 @@ intizinho salvar_jogo(Jogo *jogo){
 	}else{
 		//nothing
 	}
-	if(jogos_salvos != NULL){
+	if(jogos_salvos != NULL || jogo != NULL){
 		intizinho i = 0;
 		intizinho quantidade_de_jogos = 0;
+		intizinho posicao_salvar=0;
+		char nome_jogo[TAMANHO_NOME_JOGO];
 		Jogo *jogos = carrega_jogos(jogos_salvos, &quantidade_de_jogos);
-		for(i = 0; i < MAX_JOGOS; i++){
-			printf(" %s\n", jogos[i].nome);
-		}
-		pause();
-		if(quantidade_de_jogos == MAX_JOGOS){
-			printf("Quantidade Maxima de Jogos Atingida");
-			pause();
-			//nothing			
-		}/*else if((fwrite(jogo, (sizeof(Jogo)), 1, jogos_salvos)) == FALSE){
+        visualizar_jogos_salvos(jogos);
+		do{
+            fflush(stdin);
+    		scanf ("%d", &posicao_salvar);
+    		if (valida_salvar(posicao_salvar)== FALSE){
+                printf("Posi%c%co Inv%clida", CHAR_CEDILHA, CHAR_ATIO, CHAR_AAGUDO);
+            }
+        }while(valida_salvar(posicao_salvar) == FALSE);
+		fflush(stdin);
+		fgets (nome_jogo, TAMANHO_NOME_JOGO, stdin);
+        strcpy(jogo->nome, nome_jogo);
+        jogos[posicao_salvar-1] = *jogo;
+        rewind (jogos_salvos);
+		if((fwrite(jogos, (sizeof(Jogo)), MAX_JOGOS, jogos_salvos)) == FALSE){
 			erro("salvar_jogo()", "Nao foi possivel salvar o jogo!");
 			return FALSE;
-		}*/else{
-			//salvou!
+		}else{
+			printf("passou!");
 		}	
 	}else{
 		erro("salvar_jogo()", "Nao foi possivel abrir o arquivo!");
@@ -465,9 +499,12 @@ int main(){
 		switch(opcao){
 			case 1:
 				novo_jogo();
-				break;
+			 	break;
 			case 2:
 				jogos_salvos();
+				break;
+			case 3:
+                //ranking();
 				break;
 			case STOP:
 				break;
