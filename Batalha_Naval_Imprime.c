@@ -7,7 +7,6 @@
 //declaração de tamanhos padrões
 #define TEMPO_SLEEP 750
 #define TEMPO_SLEEP_DICA 1000
-#define MAX 10
 //declaração  
 #define CHAR_A_UPPER 65
 #define CHAR_A_LOWER 97
@@ -26,9 +25,12 @@
 #define WIN 1
 #define TRUE 1
 #define FALSE 0
+#define EFFECTS FALSE
 #define MAX_JOGOS 10
+#define MAX_MAPAS_SALVOS 50
 #define MAX_SIZE_OF_STRING 50
 //Definicoes de mapa
+#define DIMENCAO_MAPA 10
 #define PRIMEIRA_LINHA 1
 #define LINHA_MEIO 2
 #define ULTIMA_LINHA 3
@@ -51,13 +53,13 @@ typedef struct mapas{
     /*declaração da estrutura de mapas, contendo o mapa do jogador(mapa_player), 
     o mapa do inimigo que será mostrado e alterado(mapa_partida_inimigo) 
     e o mapa do inimigo que não será mostrado, contendo seus embarcacoes*/
-	char player[MAX][MAX];
-	char inimigo[MAX][MAX];
-	char partida_inimigo[MAX][MAX];
+	char player[DIMENCAO_MAPA][DIMENCAO_MAPA];
+	char inimigo[DIMENCAO_MAPA][DIMENCAO_MAPA];
+	char partida_inimigo[DIMENCAO_MAPA][DIMENCAO_MAPA];
 }MapaJogo;
 //---------------------------------------------------------------------------------------------------------------------------------------------------
 typedef struct mapa{
-    char partida_inimigo[MAX][MAX];
+    char partida[DIMENCAO_MAPA][DIMENCAO_MAPA];
 }Mapa;
 //---------------------------------------------------------------------------------------------------------------------------------------------------
 typedef struct coordenada{
@@ -80,8 +82,8 @@ typedef struct jogo{
 void imprime_coordenadas_x(intizinho tamanho);
 void imprime_estrutura_linha_mapa(intizinho tipo_linha, intizinho tamanho);
 void imprime_linha_mapa(intizinho linha, char *linha_mapa, intizinho tamanho);
-void imprimir_mapa(char mapa[][MAX]);
-void imprimir_mapa_partida(char mapa1[][MAX], char mapa2[][MAX]);
+void imprimir_mapa(char mapa[][DIMENCAO_MAPA]);
+void imprimir_mapa_partida(char mapa1[][DIMENCAO_MAPA], char mapa2[][DIMENCAO_MAPA]);
 void imprime_menu_principal();
 void imprime_menu_partida();
 void dicas_de_jogo();
@@ -124,10 +126,10 @@ void dicas_de_jogo(){
 }
 //---------------------------------------------------------------------------------------------------------------------------------------------------
 void batalha_naval_inicio(){
-    char inicio[MAX][MAX];
+    char inicio[DIMENCAO_MAPA][DIMENCAO_MAPA];
     intizinho i=0,j=0;
-    for(i=0;i<MAX;i++){
-		for (j=0;j<MAX;j++){
+    for(i = 0; i < DIMENCAO_MAPA; i++){
+		for (j = 0; j < DIMENCAO_MAPA; j++){
 			inicio[i][j] = '~';
 		}
 	}
@@ -203,7 +205,7 @@ void imprime_comando_proa(const intizinho tipo){
 //---------------------------------------------------------------------------------------------------------------------------------------------------
 void imprime_menu_principal(){
 	system("clear || cls");
-	intizinho tamanho = MAX;
+	intizinho tamanho = DIMENCAO_MAPA;
 	char *espacos_vazios=NULL;
 	putchar('\n');
 	imprime_estrutura_linha_mapa(PRIMEIRA_LINHA+MENU, tamanho);
@@ -236,7 +238,7 @@ void imprime_menu_principal(){
 }
 void imprime_menu_jogos_salvos(){
 	system("clear || cls");
-	intizinho tamanho = (MAX*(1.2));
+	intizinho tamanho = (DIMENCAO_MAPA * (1.2));
 	char *espacos_vazios=NULL;
 	putchar('\n');
 	imprime_estrutura_linha_mapa(PRIMEIRA_LINHA+MENU, tamanho);
@@ -339,34 +341,34 @@ void imprime_estrutura_linha_mapa(intizinho tipo_linha, intizinho tamanho){
 	
 }
 //---------------------------------------------------------------------------------------------------------------------------------------------------
-void imprimir_mapa (char mapa[][MAX]){
+void imprimir_mapa (char mapa[][DIMENCAO_MAPA]){
     /*imprime o mapa na tela, pode ser chamada tanto pra imprimir 
     o mapa do jogador quanto o mapa do inimigo*/
 	register intizinho i=0,j=0;
 	unsigned char letra=CHAR_A_UPPER;
 	system("cls || clear");
 	printf ("\n");
-    imprime_coordenadas_x(MAX);
+    imprime_coordenadas_x(DIMENCAO_MAPA);
 	printf ("\n");
-	imprime_estrutura_linha_mapa(PRIMEIRA_LINHA, MAX);
+	imprime_estrutura_linha_mapa(PRIMEIRA_LINHA, DIMENCAO_MAPA);
 	printf("\n");
 		
-	for(i=0;i<(MAX-1);i++){
-		imprime_linha_mapa(i,mapa[i],MAX);
+	for(i=0;i<(DIMENCAO_MAPA-1);i++){
+		imprime_linha_mapa(i,mapa[i],DIMENCAO_MAPA);
 		printf("\n");
-		imprime_estrutura_linha_mapa(LINHA_MEIO, MAX);
+		imprime_estrutura_linha_mapa(LINHA_MEIO, DIMENCAO_MAPA);
 		printf("\n");
 	}
-	imprime_linha_mapa(i,mapa[i],MAX);
+	imprime_linha_mapa(i,mapa[i],DIMENCAO_MAPA);
 	
 	printf("\n");
-	imprime_estrutura_linha_mapa(ULTIMA_LINHA, MAX);
+	imprime_estrutura_linha_mapa(ULTIMA_LINHA, DIMENCAO_MAPA);
 	printf("\n");
-	imprime_coordenadas_x(MAX);
+	imprime_coordenadas_x(DIMENCAO_MAPA);
     printf("\n");
 }
 //---------------------------------------------------------------------------------------------------------------------------------------------------
-void imprimir_mapa_partida(char mapa1[][MAX], char mapa2[][MAX]){
+void imprimir_mapa_partida(char mapa1[][DIMENCAO_MAPA], char mapa2[][DIMENCAO_MAPA]){
     /*imprime o mapa na tela, pode ser chamada tanto pra imprimir 
     o mapa do jogador quanto o mapa do inimigo*/
 	register intizinho i=0,j=0;
@@ -374,42 +376,42 @@ void imprimir_mapa_partida(char mapa1[][MAX], char mapa2[][MAX]){
 	system("cls || clear");
 	printf ("\n\tSeu Mapa\t\t");
     printf ("       Mapa Inimigo\n\n");
-    imprime_coordenadas_x(MAX);
+    imprime_coordenadas_x(DIMENCAO_MAPA);
     printf ("\t");
-	imprime_coordenadas_x(MAX);
+	imprime_coordenadas_x(DIMENCAO_MAPA);
 	printf ("\n");
-	imprime_estrutura_linha_mapa(PRIMEIRA_LINHA, MAX);
+	imprime_estrutura_linha_mapa(PRIMEIRA_LINHA, DIMENCAO_MAPA);
 	printf ("\t\t");
-	imprime_estrutura_linha_mapa(PRIMEIRA_LINHA, MAX);
+	imprime_estrutura_linha_mapa(PRIMEIRA_LINHA, DIMENCAO_MAPA);
 	printf("\n");
 		
-	for(i=0;i<(MAX-1);i++){
-		imprime_linha_mapa(i,mapa1[i],MAX);
+	for(i=0;i<(DIMENCAO_MAPA-1);i++){
+		imprime_linha_mapa(i,mapa1[i],DIMENCAO_MAPA);
 		printf ("\t");
-        imprime_linha_mapa(i,mapa2[i],MAX);
+        imprime_linha_mapa(i,mapa2[i],DIMENCAO_MAPA);
 		printf("\n");
-		imprime_estrutura_linha_mapa(LINHA_MEIO, MAX);
+		imprime_estrutura_linha_mapa(LINHA_MEIO, DIMENCAO_MAPA);
         printf ("\t\t");
-        imprime_estrutura_linha_mapa(LINHA_MEIO, MAX);
+        imprime_estrutura_linha_mapa(LINHA_MEIO, DIMENCAO_MAPA);
 		printf("\n");
 	}
-	imprime_linha_mapa(i,mapa1[i],MAX);
+	imprime_linha_mapa(i,mapa1[i],DIMENCAO_MAPA);
 	printf ("\t");
-	imprime_linha_mapa(i,mapa2[i],MAX);
+	imprime_linha_mapa(i,mapa2[i],DIMENCAO_MAPA);
     printf("\n");
-	imprime_estrutura_linha_mapa(ULTIMA_LINHA, MAX);
+	imprime_estrutura_linha_mapa(ULTIMA_LINHA, DIMENCAO_MAPA);
 	printf ("\t\t");
-	imprime_estrutura_linha_mapa(ULTIMA_LINHA, MAX);
+	imprime_estrutura_linha_mapa(ULTIMA_LINHA, DIMENCAO_MAPA);
 	printf("\n");
-	imprime_coordenadas_x(MAX);
+	imprime_coordenadas_x(DIMENCAO_MAPA);
     printf ("\t");
-	imprime_coordenadas_x(MAX);
+	imprime_coordenadas_x(DIMENCAO_MAPA);
     printf("\n");
 }
 //---------------------------------------------------------------------------------------------------------------------------------------------------
 void imprime_menu_partida(){
 	system("clear || cls");
-	intizinho tamanho = MAX;
+	intizinho tamanho = DIMENCAO_MAPA;
 	char *espacos_vazios=NULL;
 	putchar('\n');
 	imprime_estrutura_linha_mapa(PRIMEIRA_LINHA+MENU, tamanho);

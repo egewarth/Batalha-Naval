@@ -2,23 +2,27 @@
 #include "Batalha_Naval_Imprime.c"
 //---------------------------------------------------------------------------------------------------------------------------------------------------
 //declaração das funções usadas no jogo
-void posicao_navio(char mapa[][MAX]);
+void posicao_navio(char mapa[][DIMENCAO_MAPA]);
 void inicia_mapa(MapaJogo* mapa);
 void novo_jogo();
 void posicao_bomba();
 void deletar_todos_jogos();
-Jogo *carrega_jogos(FILE* jogos_salvos, intizinho *quantidade_de_jogos);  
+void salvar_mapa_jogador(char mapa_jogador[][DIMENCAO_MAPA]);
+void carrega_mapa_jogador(char mapa_jogador[][DIMENCAO_MAPA]);
 void visualizar_jogos_salvos(Jogo *jogos);
 void jogos_salvos();
 intizinho menu_partida();
 intizinho menu_principal();
 intizinho salvar_jogo(Jogo *jogo);
+intizinho valida_salvar(intizinho posicao_salvar);
+Jogo *carrega_jogos(FILE* jogos_salvos, intizinho *quantidade_de_jogos);  
+Jogo carregar_jogo(Jogo *jogos);
 //---------------------------------------------------------------------------------------------------------------------------------------------------
 void inicia_mapa(MapaJogo *mapa){
     //função para iniciar o mapa com todos os espaços iguais a '~' (agua)
 	intizinho i=0,j=0;
-	for(i=0;i<MAX;i++){
-		for (j=0;j<MAX;j++){
+	for(i=0;i<DIMENCAO_MAPA;i++){
+		for (j=0;j<DIMENCAO_MAPA;j++){
 			mapa->player[i][j] = '~';
 			mapa->inimigo[i][j] = '~';
 			mapa->partida_inimigo[i][j] = ' '; 
@@ -104,16 +108,20 @@ void jogos_salvos(){
     intizinho quantidade_de_jogos = 0, opcao = 0;
     FILE* jogos_salvos = fopen("jogos_salvos.DAT", "r+b");
     Jogo *jogos = carrega_jogos(jogos_salvos, &quantidade_de_jogos);
+    Jogo jogo;
     
     do{
 		imprime_menu_jogos_salvos();
 		scanf("%d", &opcao);
 		switch(opcao){
 			case 1:
-				//carregar_jogo();
+				jogo = carregar_jogo(jogos);
+				imprimir_mapa_partida(jogo.mapa.player, jogo.mapa.partida_inimigo);
+				pause();
 				break;
 			case 2:
 				visualizar_jogos_salvos(jogos);
+				pause();
     			break;
 			case 3:
 				deletar_todos_jogos();
@@ -127,10 +135,11 @@ void jogos_salvos(){
 				break;
 			}	
 	}while(opcao != STOP);
-    //salvar_jogo();
+    fclose(jogos_salvos);
+    free(jogos_salvos);
 }
 //---------------------------------------------------------------------------------------------------------------------------------------------------
-int posicao_vazia(char mapa[][MAX],const Coordenada coordenada){
+int posicao_vazia(char mapa[][DIMENCAO_MAPA],const Coordenada coordenada){
     /*função para validar se o lugar onde o jogador está colocando 
     o navio é um lugar 'vazio' (igual a '~') */
     if (mapa[coordenada.y][(int)(coordenada.x - CHAR_A_UPPER)] == CHAR_TIO){
@@ -143,7 +152,7 @@ int posicao_vazia(char mapa[][MAX],const Coordenada coordenada){
 int posicao_valida(const Coordenada coordenada){
     /*função para validar se a coordenada que o navio está sendo 
     colocado não é uma coordenada fora do intervalo do mapa(0-9)*/
-    if (!((coordenada.x-CHAR_A_UPPER)>(MAX-1)||(coordenada.x-CHAR_A_UPPER)< 0 ||coordenada.y<0||coordenada.y>(MAX-1))){
+    if (!((coordenada.x-CHAR_A_UPPER)>(DIMENCAO_MAPA-1)||(coordenada.x-CHAR_A_UPPER)< 0 ||coordenada.y<0||coordenada.y>(DIMENCAO_MAPA-1))){
         return TRUE;
     }else{
         return FALSE;
@@ -164,7 +173,7 @@ void corrige_string(char* string){
 	}
 }
 //---------------------------------------------------------------------------------------------------------------------------------------------------
-int coordenada_valida(char mapa[][MAX], Embarcacao embarcacao){
+int coordenada_valida(char mapa[][DIMENCAO_MAPA], Embarcacao embarcacao){
     /*função para validar se todas as regras para o posicionamento dos 
     embarcacoes estão sendo cumpridas*/
     intizinho i=0, j=0, *ponteiro_direcao;
@@ -219,7 +228,24 @@ int coordenada_valida(char mapa[][MAX], Embarcacao embarcacao){
     return TRUE;
 }
 //---------------------------------------------------------------------------------------------------------------------------------------------------
-Embarcacao cria_embarcacao(char mapa[][MAX],const intizinho tipo, intizinho quantidade){
+Jogo carregar_jogo(Jogo *jogos){
+	intizinho opcao = -1;
+	Jogo jogo;
+	do{
+		visualizar_jogos_salvos(jogos);
+		printf("Escolha qual jogo deseja carregar:");
+		fflush(stdin);
+		scanf("%d", &opcao);
+		if(valida_salvar(opcao-1)==FALSE){
+			printf("Op%c%co Inv%clida", CHAR_CEDILHA, CHAR_ATIO, CHAR_AAGUDO);
+		}else{
+			jogo = jogos[opcao-1];
+		}
+	}while(valida_salvar(opcao-1)!= TRUE);
+	return jogo;
+}
+//---------------------------------------------------------------------------------------------------------------------------------------------------
+Embarcacao cria_embarcacao(char mapa[][DIMENCAO_MAPA],const intizinho tipo, intizinho quantidade){
    Embarcacao embarcacao;
    int embarcacao_valida=0;
    embarcacao.tipo = tipo;
@@ -329,7 +355,7 @@ Embarcacao cria_embarcacao(char mapa[][MAX],const intizinho tipo, intizinho quan
    return embarcacao;
 }
 //---------------------------------------------------------------------------------------------------------------------------------------------------
-void coloca_embarcacao(char mapa[][MAX], Embarcacao embarcacao){
+void coloca_embarcacao(char mapa[][DIMENCAO_MAPA], Embarcacao embarcacao){
     int i=0, j=0;
     int *ponteiro_direcao;
     Coordenada coordenada, coordenada_embarcacao;
@@ -436,15 +462,15 @@ intizinho salvar_jogo(Jogo *jogo){
 		Jogo *jogos = carrega_jogos(jogos_salvos, &quantidade_de_jogos);
         do{
 			system("cls || clear");
-			printf("Escolha em qual pos%c%co deseja Salvar:\n", CHAR_CEDILHA, CHAR_ATIO);
+			printf("Escolha em qual posi%c%co deseja Salvar:\n", CHAR_CEDILHA, CHAR_ATIO);
 			visualizar_jogos_salvos(jogos);
 			//printf()
             fflush(stdin);
     		scanf ("%d", &posicao_salvar);
-    		if (valida_salvar(posicao_salvar)== FALSE){
+    		if (valida_salvar(posicao_salvar-1)== FALSE){
                 printf("Posi%c%co Inv%clida", CHAR_CEDILHA, CHAR_ATIO, CHAR_AAGUDO);
             }
-        }while(valida_salvar(posicao_salvar) == FALSE);
+        }while(valida_salvar(posicao_salvar-1) != TRUE);
 		
 		printf("Digite o nome do jogo:\n");
 		fflush(stdin);
@@ -467,6 +493,82 @@ intizinho salvar_jogo(Jogo *jogo){
 	return TRUE;
 }
 //---------------------------------------------------------------------------------------------------------------------------------------------------
+void salvar_mapa_jogador(char mapa_jogador[][DIMENCAO_MAPA]){
+	//salva mapa_jogador em um arquivo para ser usado pelo computador como seu mapa posteriormente
+	register intizinho i = 0, f = 0;
+	intizinho quantidade_mapas_lidos = 0;
+	Mapa mapa;
+	FILE *mapas = fopen("mapas.DAT", "a+b");
+	if(mapas == NULL){
+		mapas = fopen("mapas.DAT", "w+b");	
+	}else{
+		//nothing
+	}
+	
+	fseek(mapas, sizeof(Mapa), SEEK_END);
+	quantidade_mapas_lidos = (ftell(mapas)/(sizeof(Mapa)))-1;
+	
+	
+	for(i = 0; i < DIMENCAO_MAPA; i++){
+		for(f = 0; f < DIMENCAO_MAPA; f++){
+			mapa.partida[i][f] = mapa_jogador[i][f];
+		}
+	}
+	if(quantidade_mapas_lidos >= MAX_MAPAS_SALVOS){
+		rewind(mapas);
+		srand(time(NULL));
+		fseek(mapas, sizeof(Mapa)*(rand()%(quantidade_mapas_lidos-1)), SEEK_CUR);
+	}else{
+		fseek(mapas, sizeof(Mapa), SEEK_END);
+	}
+	fwrite(&mapa, (sizeof(Mapa)), 1, mapas);
+}
+//---------------------------------------------------------------------------------------------------------------------------------------------------
+void carrega_mapa_jogador(char mapa_jogador[][DIMENCAO_MAPA]){
+	register intizinho i = 0, f = 0;
+	intizinho quantidade_mapas_lidos = 0;
+	Mapa *mapa = (Mapa*) malloc(sizeof(Mapa));
+	FILE *mapas = fopen("mapas.DAT", "r+b");
+	printf("%.2i\n", i++);
+	if(mapas != NULL){
+		printf("%.3i\n", i++);
+		fseek(mapas, sizeof(Mapa), SEEK_END);
+		printf("%.3i\n", i++);
+		quantidade_mapas_lidos = (ftell(mapas)/(sizeof(Mapa)))-1;
+		printf("%.3i\n", i++);
+		printf("Sabe a Quantidade: %d\n", quantidade_mapas_lidos);
+		if(quantidade_mapas_lidos > 0){
+			printf("%.4i\n", i++);
+			rewind(mapas);
+			printf("%.4i\n", i++);
+			srand(time(NULL));
+			printf("Quase posicionou!\n", i++);
+			intizinho salto = (rand()%(quantidade_mapas_lidos));
+			printf("%d", quantidade_mapas_lidos);
+			pause();
+			fseek(mapas, sizeof(Mapa) * salto, SEEK_CUR);
+			printf("Quase Leu!\n", i++);
+			fread(mapa, (sizeof(Mapa)), 1, mapas);
+			printf("Leu!\n", i++);
+		}else{
+			printf("FUDEU!\n", i++);
+			//inicia mapa
+		}
+	}else{
+		printf("FUDEU!\n", i++);
+		//inicia mapa
+	}
+	
+	printf("\n");
+	for(i = 0; i < DIMENCAO_MAPA; i++){
+		for(f = 0; f < DIMENCAO_MAPA; f++){
+			mapa_jogador[i][f] = mapa->partida[i][f];
+			printf("%c", mapa_jogador[i][f]);
+		}
+		printf("\n");
+	}
+}
+//---------------------------------------------------------------------------------------------------------------------------------------------------
 void novo_jogo(){
 	intizinho opcao = 0;
 	Jogo jogo;
@@ -475,8 +577,12 @@ void novo_jogo(){
 	inicia_mapa(&(jogo.mapa));
 	jogo = cria_jogo("<SEM NOME>", START, &(jogo.mapa));
 	//pause();
-	//dicas_de_jogo();
-	//posicionar_embarcacoes(&(jogo.mapa));
+	if(EFFECTS == TRUE){
+		dicas_de_jogo();
+	}
+	posicionar_embarcacoes(&(jogo.mapa));
+	salvar_mapa_jogador(jogo.mapa.player);
+	carrega_mapa_jogador(jogo.mapa.partida_inimigo);
 	do{
         opcao = menu_partida();
 		switch(opcao){
@@ -516,7 +622,9 @@ void novo_jogo(){
 //---------------------------------------------------------------------------------------------------------------------------------------------------
 int main(){
 	intizinho opcao=0;
-	//batalha_naval_inicio();
+	if(EFFECTS == TRUE){
+		batalha_naval_inicio();
+	}
 	//pause();
 	do{
         opcao = menu_principal();
