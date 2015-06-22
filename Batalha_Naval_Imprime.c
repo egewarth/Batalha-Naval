@@ -84,6 +84,7 @@ void imprimir_mapa(char mapa[][MAX]);
 void imprimir_mapa_partida(char mapa1[][MAX], char mapa2[][MAX]);
 void imprime_menu_principal();
 void imprime_menu_partida();
+void dicas_de_jogo();
 //---------------------------------------------------------------------------------------------------------------------------------------------------
 void pause(){
     fflush(stdin);
@@ -106,6 +107,20 @@ char* completa_string(char *string, intizinho tamanho){
 		strcat(string, " ");
 	}
 	return string;
+}
+//---------------------------------------------------------------------------------------------------------------------------------------------------
+void dicas_de_jogo(){
+	printf("\n\n\tPara Pausar Aperte 'P'!\n");
+	printf("\tTente Colocar Seus Navios Separadamente\n");
+	printf("\tAo Acertar Um Navio,Tente as Casas do Lado\n");
+	printf("\n\t\tCARREGANDO\r");
+	Sleep(TEMPO_SLEEP_DICA);
+	printf("\t\tCARREGANDO.\r");
+	Sleep(TEMPO_SLEEP_DICA);
+	printf("\t\tCARREGANDO..\r");
+	Sleep(TEMPO_SLEEP_DICA);
+	printf("\t\tCARREGANDO...\r");
+	Sleep(TEMPO_SLEEP_DICA);
 }
 //---------------------------------------------------------------------------------------------------------------------------------------------------
 void batalha_naval_inicio(){
@@ -204,7 +219,7 @@ void imprime_menu_principal(){
 	putchar('\n');
 	free(espacos_vazios);
 	espacos_vazios = completa_string("[2] Jogos Salvos", tamanho);
-	printf("  %c[2] Jogos Salvos\b%s%s%c\n", 186, espacos_vazios, espacos_vazios, 186);
+	printf("  %c[2] Jogos Salvos%s%s\b%c\n", 186, espacos_vazios, espacos_vazios, 186);
 	imprime_estrutura_linha_mapa(LINHA_MEIO+MENU, tamanho);
 	putchar('\n');
 	free(espacos_vazios);
@@ -215,6 +230,39 @@ void imprime_menu_principal(){
 	free(espacos_vazios);
 	espacos_vazios = completa_string("[%d] Sair", tamanho);
 	printf("  %c[%d] Sair%s%s %c\n", 186, STOP, espacos_vazios, espacos_vazios, 186);
+	imprime_estrutura_linha_mapa(ULTIMA_LINHA+MENU, tamanho);
+	putchar('\n');
+	return;
+}
+void imprime_menu_jogos_salvos(){
+	system("clear || cls");
+	intizinho tamanho = (MAX*(1.2));
+	char *espacos_vazios=NULL;
+	putchar('\n');
+	imprime_estrutura_linha_mapa(PRIMEIRA_LINHA+MENU, tamanho);
+	putchar('\n');
+	espacos_vazios = completa_string("BATALHA NAVAL", tamanho);
+	printf("  %c%sBATALHA NAVAL%s%c\n", 186, espacos_vazios, espacos_vazios, 186);
+	imprime_estrutura_linha_mapa(LINHA_MEIO+MENU, tamanho);
+	putchar('\n');
+	free(espacos_vazios);
+	espacos_vazios = completa_string("[1] Carregar Jogo", tamanho);
+	printf("  %c[1] Carregar Jogo%s%s%c\n", 186, espacos_vazios, espacos_vazios, 186);
+	imprime_estrutura_linha_mapa(LINHA_MEIO+MENU, tamanho);
+	putchar('\n');
+	free(espacos_vazios);
+	espacos_vazios = completa_string("[2] Visualizar Jogos", tamanho);
+	printf("  %c[2] Visualizar Jogos%s%s\b%c\n", 186, espacos_vazios, espacos_vazios, 186);
+	imprime_estrutura_linha_mapa(LINHA_MEIO+MENU, tamanho);
+	putchar('\n');
+	free(espacos_vazios);
+	espacos_vazios = completa_string("[3] Limpar Jogos Salvos", tamanho);
+	printf("  %c[3] Limpar Jogos Salvos%s%s%c\n", 186, espacos_vazios, espacos_vazios, 186);
+	imprime_estrutura_linha_mapa(LINHA_MEIO+MENU, tamanho);
+	putchar('\n');
+	free(espacos_vazios);
+	espacos_vazios = completa_string("[%d] Sair para o Menu", tamanho);
+	printf("  %c[%d] Sair para o Menu%s%s %c\n", 186, STOP, espacos_vazios, espacos_vazios, 186);
 	imprime_estrutura_linha_mapa(ULTIMA_LINHA+MENU, tamanho);
 	putchar('\n');
 	return;

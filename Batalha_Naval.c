@@ -101,14 +101,33 @@ void deletar_todos_jogos(){
 void jogos_salvos(){
     //CRUD de salvar,delear e alterar os jogos
     system("clear || cls");
-    intizinho quantidade_de_jogos=0;
+    intizinho quantidade_de_jogos = 0, opcao = 0;
     FILE* jogos_salvos = fopen("jogos_salvos.DAT", "r+b");
     Jogo *jogos = carrega_jogos(jogos_salvos, &quantidade_de_jogos);
+    
+    do{
+		imprime_menu_jogos_salvos();
+		scanf("%d", &opcao);
+		switch(opcao){
+			case 1:
+				//carregar_jogo();
+				break;
+			case 2:
+				visualizar_jogos_salvos(jogos);
+    			break;
+			case 3:
+				deletar_todos_jogos();
+				break;
+			case STOP:
+				//voltar ao menu principal
+				break;
+			default:
+				printf("Op%c%co Inv%clida", CHAR_CEDILHA, CHAR_ATIO, CHAR_AAGUDO);
+				pause();
+				break;
+			}	
+	}while(opcao != STOP);
     //salvar_jogo();
-    //ler_jogos_salvos();
-    visualizar_jogos_salvos(jogos);
-    deletar_todos_jogos();
-    //deletar_jogos_salvos();
 }
 //---------------------------------------------------------------------------------------------------------------------------------------------------
 int posicao_vazia(char mapa[][MAX],const Coordenada coordenada){
@@ -129,6 +148,20 @@ int posicao_valida(const Coordenada coordenada){
     }else{
         return FALSE;
     }
+}
+//---------------------------------------------------------------------------------------------------------------------------------------------------
+void corrige_string(char* string){
+	intizinho i=0, f=0;
+	for (i= 0; i< TAMANHO_NOME_JOGO; i++){
+		if(string[i] == (char) CHAR_ENTER || string[i] == '\0'){
+			for(f=i; f < TAMANHO_NOME_JOGO; f++){
+				string[f]= '\0';
+			}
+			break;
+		}else{
+			//nothing
+		}
+	}
 }
 //---------------------------------------------------------------------------------------------------------------------------------------------------
 int coordenada_valida(char mapa[][MAX], Embarcacao embarcacao){
@@ -355,21 +388,6 @@ void posicionar_embarcacoes(MapaJogo *mapa){
     pause();
 }
 //---------------------------------------------------------------------------------------------------------------------------------------------------
-void dicas_de_jogo(){
-	printf("\n\n\tPara Pausar Aperte 'P'!\n");
-	printf("\tTente Colocar Seus Navios Separadamente\n");
-	printf("\tAo Acertar Um Navio,Tente as Casas do Lado\n");
-	
-	printf("\n\t\tCARREGANDO\r");
-	Sleep(TEMPO_SLEEP_DICA);
-	printf("\t\tCARREGANDO.\r");
-	Sleep(TEMPO_SLEEP_DICA);
-	printf("\t\tCARREGANDO..\r");
-	Sleep(TEMPO_SLEEP_DICA);
-	printf("\t\tCARREGANDO...\r");
-	Sleep(TEMPO_SLEEP_DICA);
-}
-//---------------------------------------------------------------------------------------------------------------------------------------------------
 Jogo *carrega_jogos(FILE* jogos_salvos, intizinho *quantidade_de_jogos){
 	intizinho quantidade_de_jogos_lida = 0;
 	register intizinho i = 0;
@@ -416,16 +434,22 @@ intizinho salvar_jogo(Jogo *jogo){
 		intizinho posicao_salvar=0;
 		char nome_jogo[TAMANHO_NOME_JOGO];
 		Jogo *jogos = carrega_jogos(jogos_salvos, &quantidade_de_jogos);
-        visualizar_jogos_salvos(jogos);
-		do{
+        do{
+			system("cls || clear");
+			printf("Escolha em qual pos%c%co deseja Salvar:\n", CHAR_CEDILHA, CHAR_ATIO);
+			visualizar_jogos_salvos(jogos);
+			//printf()
             fflush(stdin);
     		scanf ("%d", &posicao_salvar);
     		if (valida_salvar(posicao_salvar)== FALSE){
                 printf("Posi%c%co Inv%clida", CHAR_CEDILHA, CHAR_ATIO, CHAR_AAGUDO);
             }
         }while(valida_salvar(posicao_salvar) == FALSE);
+		
+		printf("Digite o nome do jogo:\n");
 		fflush(stdin);
 		fgets (nome_jogo, TAMANHO_NOME_JOGO, stdin);
+		corrige_string(nome_jogo);
         strcpy(jogo->nome, nome_jogo);
         jogos[posicao_salvar-1] = *jogo;
         rewind (jogos_salvos);
